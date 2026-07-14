@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emoji Shortcode Lookup</title>
+<meta name="description" content="Searchable table mapping emoji to their unicode code points and common shortcodes. Search by name, shortcode, or paste an emoji to reverse-look-up. All data inline, no external dependencies, works offline.">
+<link rel="canonical" href="https://0xelitesystem.github.io/emoji-shortcode-lookup/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Emoji Shortcode Lookup">
+<meta property="og:description" content="Map emoji to unicode code points and shortcodes. Search by name, shortcode, or paste an emoji. All data inline.">
+<meta property="og:url" content="https://0xelitesystem.github.io/emoji-shortcode-lookup/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Emoji Shortcode Lookup",
+  "description": "Searchable table mapping emoji to their unicode code points and common shortcodes. Search by name, shortcode, or paste an emoji to reverse-look-up.",
+  "url": "https://0xelitesystem.github.io/emoji-shortcode-lookup/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Organization", "name": "0xelitesystem" }
+}
+</script>
+<style>
+:root {
+  --bg: #fafaf6;
+  --surface: #ffffff;
+  --ink: #0a1d1e;
+  --ink-soft: #2c4a4c;
+  --rule: #c8d4d3;
+  --teal: #0f5c60;
+  --teal-deep: #0a4548;
+  --gold: #b07d2a;
+  --gold-deep: #8a611f;
+  --ok: #1a5c2e;
+  --warn: #8a5a00;
+  --err: #8b1a1a;
+  --code-bg: #f0ebe1;
+}
+[data-theme="dark"] {
+  --bg: #0c1c1d;
+  --surface: #14292a;
+  --ink: #e8ebe6;
+  --ink-soft: #b0c0bd;
+  --rule: #2a4042;
+  --teal: #4ab4ba;
+  --teal-deep: #6dc8ce;
+  --gold: #d4a155;
+  --gold-deep: #e6b876;
+  --ok: #6dd380;
+  --warn: #d4a155;
+  --err: #e88080;
+  --code-bg: #0a1718;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  line-height: 1.55;
+}
+.wrap { max-width: 1100px; margin: 0 auto; }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 2px solid var(--teal);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--teal);
+}
+.tag {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.75rem;
+  color: var(--gold-deep);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+[data-theme="dark"] .tag { color: var(--gold); }
+.theme-btn {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+}
+.theme-btn:hover { border-color: var(--teal); color: var(--teal); }
+.lede {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  margin-bottom: 1.5rem;
+  max-width: 64ch;
+}
+.search-box {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+}
+label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+input[type="text"] {
+  width: 100%;
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.75rem 0.85rem;
+  font-size: 1rem;
+  border-radius: 2px;
+}
+input:focus { outline: 2px solid var(--teal); outline-offset: 1px; }
+.controls { display: flex; gap: 1rem; align-items: center; margin-top: 0.85rem; flex-wrap: wrap; }
+select {
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  color: var(--ink);
+  padding: 0.5rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  border-radius: 2px;
+}
+.count { font-size: 0.8rem; color: var(--ink-soft); }
+.privacy-note { font-size: 0.78rem; color: var(--gold-deep); margin-top: 0.85rem; }
+[data-theme="dark"] .privacy-note { color: var(--gold); }
+.table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+}
+table { width: 100%; border-collapse: collapse; }
+th, td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+th {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+  background: var(--code-bg);
+}
+.emoji-cell { font-size: 1.6rem; width: 3rem; text-align: center; }
+.mono { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.82rem; color: var(--ink-soft); }
+.shortcode { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.85rem; color: var(--teal); }
+.name-cell { text-transform: capitalize; }
+.copy-btn {
+  font-family: inherit;
+  font-size: 0.72rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 2px;
+}
+.copy-btn:hover { border-color: var(--teal); }
+.copy-btn.copied { border-color: var(--ok); color: var(--ok); }
+.empty { padding: 2rem; text-align: center; color: var(--ink-soft); font-style: italic; }
+.reverse-hit {
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--teal);
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 2px;
+  font-size: 0.9rem;
+}
+footer {
+  margin-top: 3rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+}
+footer a { color: var(--teal); text-decoration: none; }
+footer a:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  body { padding: 1rem 0.75rem; }
+  h1 { font-size: 1.4rem; }
+  th:nth-child(4), td:nth-child(4) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Emoji Shortcode Lookup</h1>
+    <div class="tag">Emoji, code points, shortcodes</div>
+  </div>
+  <button class="theme-btn" id="theme-toggle" type="button">Dark</button>
+</header>
+
+<p class="lede">A searchable table mapping common emoji to their unicode code points and shortcodes (like :smile:). Search by name or shortcode, or paste an emoji to reverse-look-up its code points and shortcode. All data is inline.</p>
+
+<div class="search-box">
+  <label for="q">Search</label>
+  <input type="text" id="q" placeholder="Search by name or :shortcode:, or paste an emoji" spellcheck="false" autocapitalize="off" autocomplete="off">
+  <div class="controls">
+    <select id="cat">
+      <option value="">All categories</option>
+      <option value="smileys">Smileys</option>
+      <option value="gestures">Gestures</option>
+      <option value="objects">Objects</option>
+      <option value="symbols">Symbols</option>
+      <option value="flags">Flags</option>
+    </select>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="privacy-note">All emoji data is embedded in this page. No external dependencies, works offline.</div>
+</div>
+
+<div id="reverse-box"></div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Emoji</th>
+        <th>Name</th>
+        <th>Shortcode</th>
+        <th>Code points</th>
+        <th>Copy</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div class="empty" id="empty" style="display:none;">No matches. Try a different term.</div>
+</div>
+
+<footer>
+  <div>Emoji Shortcode Lookup. Open source, MIT licensed.</div>
+  <div>Built by <a href="https://elitesystem.ai" target="_blank" rel="noopener">elitesystem.ai</a></div>
+</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+const themeBtn = $("theme-toggle");
+function setTheme(t) {
+  document.documentElement.setAttribute("data-theme", t);
+  themeBtn.textContent = t === "dark" ? "Light" : "Dark";
+}
+themeBtn.addEventListener("click", () => {
+  const cur = document.documentElement.getAttribute("data-theme") || "light";
+  setTheme(cur === "dark" ? "light" : "dark");
+});
+
+// Inline dataset: [emoji, name, shortcode, category]
+const EMOJI = [
+  ["\u{1F600}", "grinning face", "grinning", "smileys"],
+  ["\u{1F603}", "grinning face with big eyes", "smiley", "smileys"],
+  ["\u{1F604}", "grinning face with smiling eyes", "smile", "smileys"],
+  ["\u{1F601}", "beaming face with smiling eyes", "grin", "smileys"],
+  ["\u{1F606}", "grinning squinting face", "laughing", "smileys"],
+  ["\u{1F605}", "grinning face with sweat", "sweat_smile", "smileys"],
+  ["\u{1F923}", "rolling on the floor laughing", "rofl", "smileys"],
+  ["\u{1F602}", "face with tears of joy", "joy", "smileys"],
+  ["\u{1F642}", "slightly smiling face", "slightly_smiling_face", "smileys"],
+  ["\u{1F643}", "upside-down face", "upside_down_face", "smileys"],
+  ["\u{1F609}", "winking face", "wink", "smileys"],
+  ["\u{1F60A}", "smiling face with smiling eyes", "blush", "smileys"],
+  ["\u{1F607}", "smiling face with halo", "innocent", "smileys"],
+  ["\u{1F970}", "smiling face with hearts", "smiling_face_with_three_hearts", "smileys"],
+  ["\u{1F60D}", "smiling face with heart-eyes", "heart_eyes", "smileys"],
+  ["\u{1F929}", "star-struck", "star_struck", "smileys"],
+  ["\u{1F618}", "face blowing a kiss", "kissing_heart", "smileys"],
+  ["\u{1F617}", "kissing face", "kissing", "smileys"],
+  ["\u{1F61A}", "kissing face with closed eyes", "kissing_closed_eyes", "smileys"],
+  ["\u{1F60B}", "face savoring food", "yum", "smileys"],
+  ["\u{1F61B}", "face with tongue", "stuck_out_tongue", "smileys"],
+  ["\u{1F61C}", "winking face with tongue", "stuck_out_tongue_winking_eye", "smileys"],
+  ["\u{1F92A}", "zany face", "zany_face", "smileys"],
+  ["\u{1F914}", "thinking face", "thinking", "smileys"],
+  ["\u{1F910}", "zipper-mouth face", "zipper_mouth_face", "smileys"],
+  ["\u{1F610}", "neutral face", "neutral_face", "smileys"],
+  ["\u{1F611}", "expressionless face", "expressionless", "smileys"],
+  ["\u{1F636}", "face without mouth", "no_mouth", "smileys"],
+  ["\u{1F60F}", "smirking face", "smirk", "smileys"],
+  ["\u{1F612}", "unamused face", "unamused", "smileys"],
+  ["\u{1F644}", "face with rolling eyes", "roll_eyes", "smileys"],
+  ["\u{1F62C}", "grimacing face", "grimacing", "smileys"],
+  ["\u{1F925}", "lying face", "lying_face", "smileys"],
+  ["\u{1F60C}", "relieved face", "relieved", "smileys"],
+  ["\u{1F614}", "pensive face", "pensive", "smileys"],
+  ["\u{1F62A}", "sleepy face", "sleepy", "smileys"],
+  ["\u{1F634}", "sleeping face", "sleeping", "smileys"],
+  ["\u{1F637}", "face with medical mask", "mask", "smileys"],
+  ["\u{1F912}", "face with thermometer", "face_with_thermometer", "smileys"],
+  ["\u{1F915}", "face with head-bandage", "face_with_head_bandage", "smileys"],
+  ["\u{1F922}", "nauseated face", "nauseated_face", "smileys"],
+  ["\u{1F927}", "sneezing face", "sneezing_face", "smileys"],
+  ["\u{1F975}", "hot face", "hot_face", "smileys"],
+  ["\u{1F976}", "cold face", "cold_face", "smileys"],
+  ["\u{1F974}", "woozy face", "woozy_face", "smileys"],
+  ["\u{1F635}", "face with crossed-out eyes", "dizzy_face", "smileys"],
+  ["\u{1F92F}", "exploding head", "exploding_head", "smileys"],
+  ["\u{1F920}", "cowboy hat face", "cowboy_hat_face", "smileys"],
+  ["\u{1F60E}", "smiling face with sunglasses", "sunglasses", "smileys"],
+  ["\u{1F913}", "nerd face", "nerd_face", "smileys"],
+  ["\u{1F9D0}", "face with monocle", "monocle_face", "smileys"],
+  ["\u{1F615}", "confused face", "confused", "smileys"],
+  ["\u{1F61F}", "worried face", "worried", "smileys"],
+  ["\u{1F641}", "slightly frowning face", "slightly_frowning_face", "smileys"],
+  ["\u{1F62E}", "face with open mouth", "open_mouth", "smileys"],
+  ["\u{1F62F}", "hushed face", "hushed", "smileys"],
+  ["\u{1F632}", "astonished face", "astonished", "smileys"],
+  ["\u{1F633}", "flushed face", "flushed", "smileys"],
+  ["\u{1F97A}", "pleading face", "pleading_face", "smileys"],
+  ["\u{1F626}", "frowning face with open mouth", "frowning", "smileys"],
+  ["\u{1F627}", "anguished face", "anguished", "smileys"],
+  ["\u{1F628}", "fearful face", "fearful", "smileys"],
+  ["\u{1F630}", "anxious face with sweat", "cold_sweat", "smileys"],
+  ["\u{1F625}", "sad but relieved face", "disappointed_relieved", "smileys"],
+  ["\u{1F622}", "crying face", "cry", "smileys"],
+  ["\u{1F62D}", "loudly crying face", "sob", "smileys"],
+  ["\u{1F631}", "face screaming in fear", "scream", "smileys"],
+  ["\u{1F616}", "confounded face", "confounded", "smileys"],
+  ["\u{1F623}", "persevering face", "persevere", "smileys"],
+  ["\u{1F61E}", "disappointed face", "disappointed", "smileys"],
+  ["\u{1F613}", "downcast face with sweat", "sweat", "smileys"],
+  ["\u{1F629}", "weary face", "weary", "smileys"],
+  ["\u{1F62B}", "tired face", "tired_face", "smileys"],
+  ["\u{1F971}", "yawning face", "yawning_face", "smileys"],
+  ["\u{1F624}", "face with steam from nose", "triumph", "smileys"],
+  ["\u{1F621}", "enraged face", "rage", "smileys"],
+  ["\u{1F620}", "angry face", "angry", "smileys"],
+  ["\u{1F92C}", "face with symbols on mouth", "cursing_face", "smileys"],
+  ["\u{1F608}", "smiling face with horns", "smiling_imp", "smileys"],
+  ["\u{1F47F}", "angry face with horns", "imp", "smileys"],
+  ["\u{1F480}", "skull", "skull", "smileys"],
+  ["\u{1F4A9}", "pile of poo", "poop", "smileys"],
+  ["\u{1F921}", "clown face", "clown_face", "smileys"],
+  ["\u{1F479}", "ogre", "japanese_ogre", "smileys"],
+  ["\u{1F47B}", "ghost", "ghost", "smileys"],
+  ["\u{1F47D}", "alien", "alien", "smileys"],
+  ["\u{1F916}", "robot", "robot", "smileys"],
+  ["\u{1F63A}", "grinning cat", "smiley_cat", "smileys"],
+  ["\u{1F638}", "grinning cat with smiling eyes", "smile_cat", "smileys"],
+  ["\u{1F63B}", "smiling cat with heart-eyes", "heart_eyes_cat", "smileys"],
+  ["\u{1F642}", "slightly smiling face", "slight_smile", "smileys"],
+
+  ["\u{1F44B}", "waving hand", "wave", "gestures"],
+  ["\u{1F91A}", "raised back of hand", "raised_back_of_hand", "gestures"],
+  ["\u{1F590}️", "hand with fingers splayed", "raised_hand_with_fingers_splayed", "gestures"],
+  ["✋", "raised hand", "hand", "gestures"],
+  ["\u{1F596}", "vulcan salute", "vulcan_salute", "gestures"],
+  ["\u{1F44C}", "OK hand", "ok_hand", "gestures"],
+  ["\u{1F90C}", "pinched fingers", "pinched_fingers", "gestures"],
+  ["\u{1F90F}", "pinching hand", "pinching_hand", "gestures"],
+  ["✌️", "victory hand", "v", "gestures"],
+  ["\u{1F91E}", "crossed fingers", "crossed_fingers", "gestures"],
+  ["\u{1F91F}", "love-you gesture", "love_you_gesture", "gestures"],
+  ["\u{1F918}", "sign of the horns", "metal", "gestures"],
+  ["\u{1F919}", "call me hand", "call_me_hand", "gestures"],
+  ["\u{1F448}", "backhand index pointing left", "point_left", "gestures"],
+  ["\u{1F449}", "backhand index pointing right", "point_right", "gestures"],
+  ["\u{1F446}", "backhand index pointing up", "point_up_2", "gestures"],
+  ["\u{1F447}", "backhand index pointing down", "point_down", "gestures"],
+  ["☝️", "index pointing up", "point_up", "gestures"],
+  ["\u{1F44D}", "thumbs up", "thumbsup", "gestures"],
+  ["\u{1F44E}", "thumbs down", "thumbsdown", "gestures"],
+  ["✊", "raised fist", "fist_raised", "gestures"],
+  ["\u{1F44A}", "oncoming fist", "punch", "gestures"],
+  ["\u{1F91B}", "left-facing fist", "fist_left", "gestures"],
+  ["\u{1F91C}", "right-facing fist", "fist_right", "gestures"],
+  ["\u{1F44F}", "clapping hands", "clap", "gestures"],
+  ["\u{1F64C}", "raising hands", "raised_hands", "gestures"],
+  ["\u{1F450}", "open hands", "open_hands", "gestures"],
+  ["\u{1F932}", "palms up together", "palms_up_together", "gestures"],
+  ["\u{1F91D}", "handshake", "handshake", "gestures"],
+  ["\u{1F64F}", "folded hands", "pray", "gestures"],
+  ["✍️", "writing hand", "writing_hand", "gestures"],
+  ["\u{1F485}", "nail polish", "nail_care", "gestures"],
+  ["\u{1F4AA}", "flexed biceps", "muscle", "gestures"],
+
+  ["\u{1F4BB}", "laptop", "computer", "objects"],
+  ["\u{1F5A5}️", "desktop computer", "desktop_computer", "objects"],
+  ["⌨️", "keyboard", "keyboard", "objects"],
+  ["\u{1F5B1}️", "computer mouse", "computer_mouse", "objects"],
+  ["\u{1F4F1}", "mobile phone", "iphone", "objects"],
+  ["☎️", "telephone", "phone", "objects"],
+  ["\u{1F4DE}", "telephone receiver", "telephone_receiver", "objects"],
+  ["\u{1F50B}", "battery", "battery", "objects"],
+  ["\u{1F50C}", "electric plug", "electric_plug", "objects"],
+  ["\u{1F4BE}", "floppy disk", "floppy_disk", "objects"],
+  ["\u{1F4BF}", "optical disk", "cd", "objects"],
+  ["\u{1F4F7}", "camera", "camera", "objects"],
+  ["\u{1F4F9}", "video camera", "video_camera", "objects"],
+  ["\u{1F3A5}", "movie camera", "movie_camera", "objects"],
+  ["\u{1F50D}", "magnifying glass tilted left", "mag", "objects"],
+  ["\u{1F4A1}", "light bulb", "bulb", "objects"],
+  ["\u{1F526}", "flashlight", "flashlight", "objects"],
+  ["\u{1F4D6}", "open book", "book", "objects"],
+  ["\u{1F4DA}", "books", "books", "objects"],
+  ["\u{1F4DD}", "memo", "memo", "objects"],
+  ["✏️", "pencil", "pencil2", "objects"],
+  ["\u{1F4CC}", "pushpin", "pushpin", "objects"],
+  ["\u{1F4CE}", "paperclip", "paperclip", "objects"],
+  ["✂️", "scissors", "scissors", "objects"],
+  ["\u{1F511}", "key", "key", "objects"],
+  ["\u{1F512}", "locked", "lock", "objects"],
+  ["\u{1F513}", "unlocked", "unlock", "objects"],
+  ["\u{1F528}", "hammer", "hammer", "objects"],
+  ["\u{1F527}", "wrench", "wrench", "objects"],
+  ["⚙️", "gear", "gear", "objects"],
+  ["\u{1F9F0}", "toolbox", "toolbox", "objects"],
+  ["\u{1F4E6}", "package", "package", "objects"],
+  ["\u{1F4E7}", "e-mail", "email", "objects"],
+  ["\u{1F4B0}", "money bag", "moneybag", "objects"],
+  ["\u{1F4B3}", "credit card", "credit_card", "objects"],
+  ["\u{1F4C8}", "chart increasing", "chart_with_upwards_trend", "objects"],
+  ["\u{1F4C9}", "chart decreasing", "chart_with_downwards_trend", "objects"],
+  ["⏰", "alarm clock", "alarm_clock", "objects"],
+  ["⌛", "hourglass done", "hourglass", "objects"],
+  ["\u{1F4A3}", "bomb", "bomb", "objects"],
+  ["\u{1F680}", "rocket", "rocket", "objects"],
+  ["\u{1F525}", "fire", "fire", "objects"],
+  ["\u{1F389}", "party popper", "tada", "objects"],
+  ["\u{1F381}", "wrapped gift", "gift", "objects"],
+  ["\u{1F3C6}", "trophy", "trophy", "objects"],
+  ["\u{1F48A}", "pill", "pill", "objects"],
+  ["\u{1F9EA}", "test tube", "test_tube", "objects"],
+
+  ["❤️", "red heart", "heart", "symbols"],
+  ["\u{1F9E1}", "orange heart", "orange_heart", "symbols"],
+  ["\u{1F49B}", "yellow heart", "yellow_heart", "symbols"],
+  ["\u{1F49A}", "green heart", "green_heart", "symbols"],
+  ["\u{1F499}", "blue heart", "blue_heart", "symbols"],
+  ["\u{1F49C}", "purple heart", "purple_heart", "symbols"],
+  ["\u{1F5A4}", "black heart", "black_heart", "symbols"],
+  ["\u{1F494}", "broken heart", "broken_heart", "symbols"],
+  ["\u{1F495}", "two hearts", "two_hearts", "symbols"],
+  ["\u{1F496}", "sparkling heart", "sparkling_heart", "symbols"],
+  ["✨", "sparkles", "sparkles", "symbols"],
+  ["⭐", "star", "star", "symbols"],
+  ["\u{1F31F}", "glowing star", "star2", "symbols"],
+  ["⚡", "high voltage", "zap", "symbols"],
+  ["✅", "check mark button", "white_check_mark", "symbols"],
+  ["✔️", "check mark", "heavy_check_mark", "symbols"],
+  ["❌", "cross mark", "x", "symbols"],
+  ["❎", "cross mark button", "negative_squared_cross_mark", "symbols"],
+  ["❗", "exclamation mark", "exclamation", "symbols"],
+  ["❓", "question mark", "question", "symbols"],
+  ["⚠️", "warning", "warning", "symbols"],
+  ["\u{1F6AB}", "prohibited", "no_entry_sign", "symbols"],
+  ["♻️", "recycling symbol", "recycle", "symbols"],
+  ["\u{1F195}", "new button", "new", "symbols"],
+  ["\u{1F193}", "free button", "free", "symbols"],
+  ["\u{1F51D}", "top arrow", "top", "symbols"],
+  ["⬆️", "up arrow", "arrow_up", "symbols"],
+  ["⬇️", "down arrow", "arrow_down", "symbols"],
+  ["⬅️", "left arrow", "arrow_left", "symbols"],
+  ["➡️", "right arrow", "arrow_right", "symbols"],
+  ["\u{1F504}", "counterclockwise arrows button", "arrows_counterclockwise", "symbols"],
+  ["\u{1F49F}", "heart decoration", "heart_decoration", "symbols"],
+  ["\u{1F4AF}", "hundred points", "100", "symbols"],
+  ["\u{1F3B5}", "musical note", "musical_note", "symbols"],
+  ["\u{1F514}", "bell", "bell", "symbols"],
+  ["♾️", "infinity", "infinity", "symbols"],
+  ["♈", "aries", "aries", "symbols"],
+  ["\u{1F535}", "blue circle", "large_blue_circle", "symbols"],
+  ["\u{1F534}", "red circle", "red_circle", "symbols"],
+  ["\u{1F7E2}", "green circle", "green_circle", "symbols"],
+
+  ["\u{1F3C1}", "chequered flag", "checkered_flag", "flags"],
+  ["\u{1F6A9}", "triangular flag", "triangular_flag_on_post", "flags"],
+  ["\u{1F3F4}", "black flag", "black_flag", "flags"],
+  ["\u{1F3F3}️", "white flag", "white_flag", "flags"],
+  ["\u{1F1FA}\u{1F1F8}", "flag united states", "us", "flags"],
+  ["\u{1F1EC}\u{1F1E7}", "flag united kingdom", "gb", "flags"],
+  ["\u{1F1E8}\u{1F1E6}", "flag canada", "canada", "flags"],
+  ["\u{1F1EB}\u{1F1F7}", "flag france", "fr", "flags"],
+  ["\u{1F1E9}\u{1F1EA}", "flag germany", "de", "flags"],
+  ["\u{1F1EF}\u{1F1F5}", "flag japan", "jp", "flags"],
+  ["\u{1F1EE}\u{1F1F3}", "flag india", "india", "flags"],
+  ["\u{1F1E7}\u{1F1F7}", "flag brazil", "brazil", "flags"],
+  ["\u{1F1E6}\u{1F1FA}", "flag australia", "australia", "flags"],
+  ["\u{1F1EA}\u{1F1F8}", "flag spain", "es", "flags"],
+  ["\u{1F1EE}\u{1F1F9}", "flag italy", "it", "flags"],
+  ["\u{1F1F2}\u{1F1FD}", "flag mexico", "mexico", "flags"],
+  ["\u{1F1F0}\u{1F1F7}", "flag south korea", "kr", "flags"],
+  ["\u{1F1E8}\u{1F1F3}", "flag china", "cn", "flags"],
+  ["\u{1F1F7}\u{1F1FA}", "flag russia", "ru", "flags"],
+  ["\u{1F1F3}\u{1F1F1}", "flag netherlands", "netherlands", "flags"]
+];
+
+function codePoints(str) {
+  const cps = [];
+  for (const ch of str) {
+    cps.push("U+" + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, "0"));
+  }
+  return cps.join(" ");
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const tbody = $("tbody");
+
+function render(list) {
+  tbody.innerHTML = "";
+  if (list.length === 0) {
+    $("empty").style.display = "block";
+  } else {
+    $("empty").style.display = "none";
+  }
+  const frag = document.createDocumentFragment();
+  for (const [emoji, name, shortcode, cat] of list) {
+    const tr = document.createElement("tr");
+    tr.innerHTML =
+      `<td class="emoji-cell">${emoji}</td>` +
+      `<td class="name-cell">${escapeHtml(name)}</td>` +
+      `<td class="shortcode">:${escapeHtml(shortcode)}:</td>` +
+      `<td class="mono">${codePoints(emoji)}</td>` +
+      `<td><button class="copy-btn" type="button">Copy</button></td>`;
+    const btn = tr.querySelector(".copy-btn");
+    btn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(emoji);
+        btn.textContent = "Copied";
+        btn.classList.add("copied");
+        setTimeout(() => { btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1200);
+      } catch (e) {
+        btn.textContent = "Failed";
+        setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+      }
+    });
+    frag.appendChild(tr);
+  }
+  tbody.appendChild(frag);
+  $("count").textContent = list.length + " of " + EMOJI.length + " shown";
+}
+
+function containsEmoji(q) {
+  // returns first dataset row whose emoji appears in q, else null
+  for (const row of EMOJI) {
+    if (q.includes(row[0])) return row;
+  }
+  return null;
+}
+
+function hasNonAscii(s) {
+  return /[^\x00-\x7F]/.test(s);
+}
+
+function filterList() {
+  const raw = $("q").value.trim();
+  const cat = $("cat").value;
+  $("reverse-box").innerHTML = "";
+
+  // Reverse lookup: user pasted an emoji
+  if (raw && hasNonAscii(raw)) {
+    const hit = containsEmoji(raw);
+    if (hit) {
+      const [emoji, name, shortcode] = hit;
+      $("reverse-box").innerHTML =
+        `<div class="reverse-hit">Reverse lookup: <span style="font-size:1.4rem;vertical-align:middle;">${emoji}</span> ` +
+        `<strong style="text-transform:capitalize;">${escapeHtml(name)}</strong>, ` +
+        `shortcode <span class="shortcode">:${escapeHtml(shortcode)}:</span>, ` +
+        `code points <span class="mono">${codePoints(emoji)}</span></div>`;
+    } else {
+      // Not in dataset, still show its code points
+      $("reverse-box").innerHTML =
+        `<div class="reverse-hit">Pasted characters not in the dataset. Code points: ` +
+        `<span class="mono">${codePoints(raw)}</span></div>`;
+    }
+  }
+
+  const q = raw.toLowerCase().replace(/^:|:$/g, "");
+  const out = EMOJI.filter(([emoji, name, shortcode, c]) => {
+    if (cat && c !== cat) return false;
+    if (!q) return true;
+    if (hasNonAscii(raw)) return raw.includes(emoji);
+    return name.toLowerCase().includes(q) || shortcode.toLowerCase().includes(q);
+  });
+  render(out);
+}
+
+$("q").addEventListener("input", filterList);
+$("cat").addEventListener("change", filterList);
+
+setTheme("light");
+render(EMOJI);
+</script>
+</body>
+</html>
