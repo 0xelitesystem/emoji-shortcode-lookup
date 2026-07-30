@@ -24,6 +24,10 @@ The emoji dataset is a plain array embedded in the page, one entry per emoji wit
 
 Everything runs in your browser from inline data. Your searches and pasted input never leave your machine. There are no external requests, no analytics, and no tracking.
 
+## More
+
+Part of a catalog of single-file browser tools and plain-language references, all MIT licensed and dependency-free: [0xelitesystem.github.io](https://0xelitesystem.github.io/). Built by [elitesystem.ai](https://elitesystem.ai).
+
 ## License
 
 MIT. Copyright 0xelitesystem 2026.
